@@ -1,6 +1,9 @@
 package cafeteria.vista;
 
+import cafeteria.datos.ConexionBD;
+import cafeteria.datos.RepositorioProductos;
 import cafeteria.descuento.CalculadoraDescuento;
+import cafeteria.modelo.Producto;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -13,6 +16,8 @@ import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Ventana de la aplicación. Solo muestra datos y recibe lo que escribe el usuario.
@@ -23,16 +28,22 @@ public class VentanaDescuento extends JFrame {
     private static final long serialVersionUID = 1L;
 
     private final CalculadoraDescuento calculadora;
+    private final ConexionBD conexionBD;
+    private final RepositorioProductos repositorio;
 
     private final JTextField campoMonto = new JTextField(10);
     private final JButton botonCalcular = new JButton("Calcular Descuento");
     private final JTextArea areaResultado = new JTextArea(16, 58);
 
-    public VentanaDescuento(CalculadoraDescuento calculadora) {
+    public VentanaDescuento(CalculadoraDescuento calculadora,
+                            ConexionBD conexionBD,
+                            RepositorioProductos repositorio) {
         super("Cafetería - Calculadora de descuentos");
         this.calculadora = calculadora;
+        this.conexionBD = conexionBD;
+        this.repositorio = repositorio;
         armarVentana();
-        areaResultado.append("Escriba el monto y presione Calcular Descuento.\n");
+        probarConexion();
     }
 
     private void armarVentana() {
@@ -61,6 +72,30 @@ public class VentanaDescuento extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         pack();
         setLocationRelativeTo(null);
+    }
+
+    /** Intenta conectarse a la base de datos al iniciar y muestra qué pasó. */
+    private void probarConexion() {
+        try {
+            conexionBD.cargarDriver();
+            repositorio.prepararTabla();
+            List<Producto> productos = repositorio.listarProductos();
+            areaResultado.append("Conexión a la base de datos exitosa.\n");
+            areaResultado.append("Productos de la cafetería:\n");
+            for (Producto p : productos) {
+                areaResultado.append("  " + p.describir() + "\n");
+            }
+        } catch (ClassNotFoundException ex) {
+            areaResultado.append("Error: no se encontró el driver de SQLite ("
+                    + ex.getMessage() + ").\n");
+            areaResultado.append("Revise que el .jar esté en la carpeta lib.\n");
+            areaResultado.append("La calculadora de descuentos sí funciona.\n");
+        } catch (SQLException ex) {
+            areaResultado.append("Error al conectar con la base de datos: "
+                    + ex.getMessage() + "\n");
+            areaResultado.append("La calculadora de descuentos sí funciona.\n");
+        }
+        areaResultado.append("--------------------------------------------\n");
     }
 
     private void calcular() {

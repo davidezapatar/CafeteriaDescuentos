@@ -1,5 +1,7 @@
 package cafeteria;
 
+import cafeteria.datos.ConexionBD;
+import cafeteria.datos.RepositorioProductos;
 import cafeteria.descuento.CalculadoraDescuento;
 import cafeteria.descuento.ReglasCafeteria;
 import cafeteria.vista.VentanaDescuento;
@@ -13,8 +15,11 @@ public class Main {
         SwingUtilities.invokeLater(() -> {
             CalculadoraDescuento calculadora =
                     new CalculadoraDescuento(ReglasCafeteria.QUINCE_POR_CIENTO_SOBRE_10);
+            ConexionBD conexionBD = new ConexionBD();
+            RepositorioProductos repositorio = new RepositorioProductos(conexionBD);
 
-            VentanaDescuento ventana = new VentanaDescuento(calculadora);
+            VentanaDescuento ventana =
+                    new VentanaDescuento(calculadora, conexionBD, repositorio);
             ventana.setVisible(true);
         });
     }
