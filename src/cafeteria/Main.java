@@ -2,18 +2,20 @@ package cafeteria;
 
 import cafeteria.descuento.CalculadoraDescuento;
 import cafeteria.descuento.ReglasCafeteria;
+import cafeteria.vista.VentanaDescuento;
 
-/** Segunda versión: prueba la regla de descuento hecha con lambda. */
+import javax.swing.SwingUtilities;
+
+/** Punto de entrada. Aquí se crean los objetos y se conectan entre sí. */
 public class Main {
 
     public static void main(String[] args) {
-        CalculadoraDescuento calculadora =
-                new CalculadoraDescuento(ReglasCafeteria.QUINCE_POR_CIENTO_SOBRE_10);
+        SwingUtilities.invokeLater(() -> {
+            CalculadoraDescuento calculadora =
+                    new CalculadoraDescuento(ReglasCafeteria.QUINCE_POR_CIENTO_SOBRE_10);
 
-        double[] montos = {25, 10, 8};
-        for (double monto : montos) {
-            System.out.printf("Monto: $%.2f | Descuento: $%.2f | Total: $%.2f%n",
-                    monto, calculadora.calcularDescuento(monto), calculadora.calcularTotalFinal(monto));
-        }
+            VentanaDescuento ventana = new VentanaDescuento(calculadora);
+            ventana.setVisible(true);
+        });
     }
 }
