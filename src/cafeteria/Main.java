@@ -1,21 +1,19 @@
 package cafeteria;
 
-import cafeteria.modelo.Bebida;
-import cafeteria.modelo.Comida;
-import cafeteria.modelo.Producto;
+import cafeteria.descuento.CalculadoraDescuento;
+import cafeteria.descuento.ReglasCafeteria;
 
-import java.util.List;
-
-/** Primera versión: solo prueba las clases del modelo en la consola. */
+/** Segunda versión: prueba la regla de descuento hecha con lambda. */
 public class Main {
 
     public static void main(String[] args) {
-        List<Producto> productos = List.of(
-                new Bebida("Café americano", 2.50, true),
-                new Comida("Empanada de verduras", 2.00, true));
+        CalculadoraDescuento calculadora =
+                new CalculadoraDescuento(ReglasCafeteria.QUINCE_POR_CIENTO_SOBRE_10);
 
-        for (Producto p : productos) {
-            System.out.println(p.describir());
+        double[] montos = {25, 10, 8};
+        for (double monto : montos) {
+            System.out.printf("Monto: $%.2f | Descuento: $%.2f | Total: $%.2f%n",
+                    monto, calculadora.calcularDescuento(monto), calculadora.calcularTotalFinal(monto));
         }
     }
 }
